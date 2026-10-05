@@ -3,4 +3,14 @@
 
 | files | lines | functions (+ / ~ / −) | call edges (+ / −) | test reach |
 |---|---|---|---|---|
-| 1 | +1 / −1 | 0 / 1 / 0 | 0 / 0 | n/a (0/0) |
+| 2 | +4 / −1 | 1 / 2 / 0 | 0 / 0 | 0% (0/1) |
+
+⚠️ **1 changed function not reached by any test:** `graphDiffProbe`
+
+<details><summary>Largest changed functions (1 in code)</summary>
+
+| function | location | lines | test reach |
+|---|---|---|---|
+| 🟢 `graphDiffProbe` | `beacon/params/config.go:272` | +1 −0 | ⚠️ none |
+
+</details>
