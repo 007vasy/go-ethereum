@@ -41,7 +41,7 @@ jobs:
             git commit -q -m "Replay ethereum/go-ethereum#$n"
             git push -q -f origin "review-$n"
             title=$(gh api "repos/ethereum/go-ethereum/pulls/$n" --jq .title)
-            gh pr create --base master --head "review-$n" --title "[review me #$n] $title" \
+            gh pr create --repo "$GITHUB_REPOSITORY" --base master --head "review-$n" --title "[review me #$n] $title" \
               --body "Dummy PR (replay of ethereum/go-ethereum#$n) opened by github-actions[bot] to test \`graph-diff review\`." \
               --reviewer "$REVIEWER"
           done
