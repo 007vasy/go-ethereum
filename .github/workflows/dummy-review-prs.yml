@@ -34,8 +34,8 @@ jobs:
           for n in $PRS; do
             # Apply only the PR's own changes on top of master (keeps .github untouched: the
             # Actions token may not create PRs that modify workflows).
-            git fetch -q upstream "+refs/pull/$n/head:refs/upstream-pr/$n" master
-            base=$(git merge-base FETCH_HEAD "refs/upstream-pr/$n")
+            git fetch -q upstream "+refs/pull/$n/head:refs/upstream-pr/$n" "+refs/heads/master:refs/remotes/upstream/master"
+            base=$(git merge-base refs/remotes/upstream/master "refs/upstream-pr/$n")
             git checkout -q -B "review-$n" origin/master
             git diff --binary "$base" "refs/upstream-pr/$n" -- . ':(exclude).github' | git apply --index
             git commit -q -m "Replay ethereum/go-ethereum#$n"
