@@ -1,0 +1,39 @@
+# Test helper for graph-diff: opens PRs authored by github-actions[bot] that request a review from
+# the given user, so `graph-diff review` (review-requested:@me) has something to list.
+name: dummy review PRs
+
+on:
+  workflow_dispatch:
+    inputs:
+      reviewer:
+        description: GitHub user to request a review from
+        default: 007vasy
+      upstream_prs:
+        description: Space-separated ethereum/go-ethereum PR numbers to replay
+        default: '35862 35861 35859'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  open:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          REVIEWER: ${{ inputs.reviewer }}
+          PRS: ${{ inputs.upstream_prs }}
+        run: |
+          git remote add upstream https://github.com/ethereum/go-ethereum.git
+          for n in $PRS; do
+            git fetch -q upstream "+refs/pull/$n/head:refs/heads/review-$n"
+            git push -q origin "review-$n"
+            title=$(gh api "repos/ethereum/go-ethereum/pulls/$n" --jq .title)
+            gh pr create --base master --head "review-$n" --title "[review me #$n] $title" \
+              --body "Dummy PR (replay of ethereum/go-ethereum#$n) opened by github-actions[bot] to test \`graph-diff review\`." \
+              --reviewer "$REVIEWER"
+          done
