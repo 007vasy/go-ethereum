@@ -27,7 +27,7 @@ jobs:
         with:
           fetch-depth: 0
       # Optional: run tests with coverage first and pass `coverage: coverage/lcov.info`.
-      - uses: ./.github/actions/graph-diff   # vendored copy of 007vasy/graph-diff (private)
+      - uses: 007vasy/graph-diff@main
         with:
           comment: 'true'
           status: 'true'
