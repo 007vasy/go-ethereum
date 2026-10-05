@@ -29,9 +29,17 @@ jobs:
           PRS: ${{ inputs.upstream_prs }}
         run: |
           git remote add upstream https://github.com/ethereum/go-ethereum.git
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           for n in $PRS; do
-            git fetch -q upstream "+refs/pull/$n/head:refs/heads/review-$n"
-            git push -q origin "review-$n"
+            # Apply only the PR's own changes on top of master (keeps .github untouched: the
+            # Actions token may not create PRs that modify workflows).
+            git fetch -q upstream "+refs/pull/$n/head:refs/upstream-pr/$n" master
+            base=$(git merge-base FETCH_HEAD "refs/upstream-pr/$n")
+            git checkout -q -B "review-$n" origin/master
+            git diff --binary "$base" "refs/upstream-pr/$n" -- . ':(exclude).github' | git apply --index
+            git commit -q -m "Replay ethereum/go-ethereum#$n"
+            git push -q -f origin "review-$n"
             title=$(gh api "repos/ethereum/go-ethereum/pulls/$n" --jq .title)
             gh pr create --base master --head "review-$n" --title "[review me #$n] $title" \
               --body "Dummy PR (replay of ethereum/go-ethereum#$n) opened by github-actions[bot] to test \`graph-diff review\`." \
