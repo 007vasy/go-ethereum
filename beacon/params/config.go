@@ -267,3 +267,6 @@ func (c *ChainConfig) SaveCheckpointToFile(checkpoint common.Hash) (bool, error)
 	err := os.WriteFile(c.CheckpointFile, []byte(checkpoint.Hex()), 0600)
 	return err == nil, err
 }
+
+// graphDiffProbe exists only to test graph-diff updates.
+func graphDiffProbe() int { return 42 }
